@@ -1,5 +1,5 @@
-
 const express = require('express');
+const axios = require('axios');
 const books = require('./booksdb.js');
 const { isValid, users } = require('./auth_users.js');
 
@@ -87,6 +87,64 @@ public_users.get('/title/:title', async (req, res) => {
         return res.status(200).json(Object.fromEntries(result));
     } catch (error) {
         return res.status(500).json({ message: 'Unable to search books' });
+    }
+});
+
+// Axios-based asynchronous book retrieval routes
+
+const API_BASE_URL = `http://127.0.0.1:${process.env.PORT || 5000}`;
+
+// Retrieve all books using Axios
+public_users.get('/async', async (req, res) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/`);
+        res.status(200).json(response.data);
+    } catch (error) {
+        res.status(error.response?.status || 500).json(
+            error.response?.data || { message: 'Unable to retrieve books' }
+        );
+    }
+});
+
+// Retrieve book by ISBN using Axios
+public_users.get('/async/isbn/:isbn', async (req, res) => {
+    try {
+        const response = await axios.get(
+            `${API_BASE_URL}/isbn/${encodeURIComponent(req.params.isbn)}`
+        );
+        res.status(200).json(response.data);
+    } catch (error) {
+        res.status(error.response?.status || 500).json(
+            error.response?.data || { message: 'Unable to retrieve book' }
+        );
+    }
+});
+
+// Retrieve books by author using Axios
+public_users.get('/async/author/:author', async (req, res) => {
+    try {
+        const response = await axios.get(
+            `${API_BASE_URL}/author/${encodeURIComponent(req.params.author)}`
+        );
+        res.status(200).json(response.data);
+    } catch (error) {
+        res.status(error.response?.status || 500).json(
+            error.response?.data || { message: 'Unable to retrieve books by author' }
+        );
+    }
+});
+
+// Retrieve books by title using Axios
+public_users.get('/async/title/:title', async (req, res) => {
+    try {
+        const response = await axios.get(
+            `${API_BASE_URL}/title/${encodeURIComponent(req.params.title)}`
+        );
+        res.status(200).json(response.data);
+    } catch (error) {
+        res.status(error.response?.status || 500).json(
+            error.response?.data || { message: 'Unable to retrieve books by title' }
+        );
     }
 });
 
